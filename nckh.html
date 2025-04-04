@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chủ Mỹ Phẩm</title>
+    <style>
+        /* Reset & Global Styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Arial', sans-serif; line-height: 1.6; color: #333; background: #fafafa; }
+        a { text-decoration: none; }
+
+        /* Navbar */
+        nav {
+            background: linear-gradient(90deg, #ff7eb3, #ff758c);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        nav .logo { font-size: 26px; font-weight: bold; color: white; }
+        nav ul { list-style: none; display: flex; }
+        nav ul li { margin: 0 20px; }
+        nav ul li a { color: white; font-size: 16px; transition: color 0.3s; }
+        nav ul li a:hover { color: #ffe6e6; }
+
+        /* Auth Section */
+        .auth-section {
+            padding: 60px 20px;
+            text-align: center;
+            background: #fff0f5;
+            margin: 40px auto;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .auth-section h2 { font-size: 32px; margin-bottom: 20px; color: #d6336c; }
+        .auth-section .tabs { margin-bottom: 20px; }
+        .auth-section .tabs button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+        .auth-section .tabs button.active { border-bottom: 2px solid #d6336c; }
+        .auth-section .forms input,
+        .auth-section .forms select,
+        .auth-section .forms button {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .auth-section .forms button {
+            background: #ff758c;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .auth-section .forms button:hover { background: #ff4d6d; }
+
+        /* Main Content (hidden cho đến khi đăng nhập thành công) */
+        #mainContent { display: none; }
+
+        /* Hero Section */
+        .hero {
+            background: url('https://via.placeholder.com/1920x600/ff7eb3/ffffff?text=My+Cosmetics') no-repeat center center/cover;
+            height: 600px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4);
+        }
+        .hero div { position: relative; z-index: 2; animation: fadeInUp 1s ease; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .hero p { font-size: 20px; margin-bottom: 30px; color: #f0f0f0; }
+        .hero button {
+            padding: 12px 25px;
+            font-size: 18px;
+            background: #ff758c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+        .hero button:hover { background: #ff4d6d; transform: scale(1.05); }
+
+        /* About Section */
+        .about { padding: 60px 20px; text-align: center; background: #ffe6e6; }
+        .about h2 { font-size: 36px; margin-bottom: 20px; color: #e60073; }
+        .about p { font-size: 18px; max-width: 800px; margin: 0 auto; color: #555; }
+
+        /* Customer Care Section */
+        .customer-care { padding: 60px 20px; text-align: center; background: #fbdedf; }
+        .customer-care h2 { font-size: 36px; margin-bottom: 20px; color: #d6336c; }
+        .customer-care p { font-size: 18px; margin-bottom: 30px; color: #555; }
+        .customer-care button {
+            padding: 12px 20px;
+            font-size: 16px;
+            background: #ff758c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+        .customer-care button:hover { background: #ff4d6d; transform: scale(1.05); }
+        .customer-care video {
+            display: none;
+            width: 50%;
+            margin: 20px auto 0;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+        .customer-care p#evaluationResult { margin-top: 20px; font-size: 18px; color: #333; }
+
+        /* Footer */
+        footer { background: #333; color: white; text-align: center; padding: 20px 0; margin-top: 40px; }
+    </style>
+</head>
+<body>
+    
+
+    <!-- Registration and Login Section (hiện trước khi đăng nhập) -->
+   <!-- Auth Section -->
+<div class="auth-section" id="auth">
+    <h2>Đăng nhập / Đăng ký</h2>
+    <div class="tabs">
+        <button id="loginTab" class="active">Đăng nhập</button>
+        <button id="registerTab">Đăng ký</button>
+    </div>
+    <div class="forms">
+        <!-- Login Form -->
+        <form id="loginForm" style="display: block;">
+            <input type="text" placeholder="Tên đăng nhập" required>
+            <input type="password" placeholder="Mật khẩu" required>
+            <button type="submit">Đăng nhập</button>
+        </form>
+        <!-- Register Form -->
+        <form id="registerForm" style="display: none;">
+            <input type="text" placeholder="Họ và tên" required>
+            <input type="email" placeholder="Email" required>
+            <input type="text" placeholder="Tên đăng nhập" required>
+            <input type="password" placeholder="Mật khẩu" required>
+            <select id="age" name="age" required>
+                <option value="" disabled selected>Chọn tuổi hiện tại (1 - 100)</option>
+            </select>
+            <input type="text" placeholder="Tình trạng da đang mắc phải (nếu biết)" required>
+            <button type="submit">Đăng ký</button>
+        </form>
+        <script>
+            // Tạo các option tuổi từ 1 đến 100
+            const ageSelect = document.getElementById('age');
+            for(let i = 1; i <= 100; i++){
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                ageSelect.appendChild(option);
+            }
+        </script>
+    </div>
+</div>
+
+<!-- JavaScript to toggle between forms -->
+<script>
+    const loginTab = document.getElementById('loginTab');
+    const registerTab = document.getElementById('registerTab');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+
+    loginTab.addEventListener('click', function() {
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+        loginTab.classList.add('active');
+        registerTab.classList.remove('active');
+    });
+
+    registerTab.addEventListener('click', function() {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+        registerTab.classList.add('active');
+        loginTab.classList.remove('active');
+    });
+</script>
+
+<!-- JavaScript xử lý đăng kí và đăng nhập -->
+<script>
+    // Biến lưu thông tin đã đăng kí (một đối tượng chứa username và password)
+    let registeredUser = null;
+
+    // Xử lý đăng kí:
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        // Lấy giá trị từ form đăng kí:
+        // Các input theo thứ tự: Họ và tên, Email, Tên đăng nhập, Mật khẩu, Age, Tình trạng da
+        const fullName = e.target.elements[0].value.trim();
+        const email = e.target.elements[1].value.trim();
+        const username = e.target.elements[2].value.trim();
+        const password = e.target.elements[3].value;  // Mật khẩu không cần trim
+        // Lưu thông tin đăng kí (chỉ kiểm tra username & password)
+        registeredUser = { fullName, email, username, password };
+        alert("Đăng ký thành công! Vui lòng đăng nhập.");
+        // Chuyển sang form đăng nhập:
+        loginTab.click();
+    });
+
+    // Xử lý đăng nhập:
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const username = e.target.elements[0].value.trim();
+        const password = e.target.elements[1].value;
+        if (!registeredUser) {
+            alert("Chưa có người dùng đăng kí, vui lòng đăng kí trước!");
+            return;
+        }
+        if (username === registeredUser.username && password === registeredUser.password) {
+            alert("Đăng nhập thành công!");
+            // Ẩn Auth Section và hiển thị nội dung chính
+            document.getElementById('auth').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+        } else {
+            alert("Tên đăng nhập hoặc mật khẩu không đúng!");
+        }
+    });
+</script>
+
+    <!-- Main Content (chỉ hiện khi đăng nhập thành công) -->
+    <div id="mainContent">
+        <!-- Hero Section -->
+        <nav>
+            <div class="logo">Nghiên cứu khoa học</div>
+            <ul>
+                <li><a href="#home">Trang Chủ</a></li>
+                <li><a href="#about">Giới Thiệu</a></li>
+                <li><a href="#products">Sản Phẩm</a></li>
+                <li><a href="#contact">Liên Hệ</a></li>
+            </ul>
+        </nav>
+         
+        <div class="hero" id="home">
+
+            <div>
+                <h1>Lan Khe deptraiiiiiii</h1>
+                <p>Khám phá vẻ đẹp tự nhiên với các sản phẩm chất lượng cao của chúng tôi</p>
+                <button>Mua Ngay</button>
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <div class="about" id="about">
+            <h2>Về Chúng Tôi</h2>
+            <p>
+                My Cosmetics là thương hiệu mỹ phẩm hàng đầu, mang đến cho bạn những sản phẩm chăm sóc da và làm đẹp tốt nhất. 
+                Chúng tôi cam kết sử dụng các thành phần tự nhiên và an toàn để giúp bạn tỏa sáng mỗi ngày.
+            </p>
+        </div>
+
+
+      <!-- Customer Care Section - Kiểm tra Da Mặt tích hợp Teachable Machine (sau khi đăng nhập) -->
+<div class="customer-care" id="contact">
+    <h2>Chăm Sóc Khách Hàng</h2>
+    <p>Nhấn nút bên dưới để sử dụng camera qua mô hình Teachable Machine và đánh giá tình trạng da của bạn.</p>
+    <button type="button" onclick="init()">Bắt đầu quan sát</button>
+    <div id="webcam-container" style="border: 2px solid black; width: 400px; height: 300px; margin: 20px auto;"></div>
+    <div id="label-container"></div>
+</div>
+
+<!-- JavaScript for Teachable Machine Image Model -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+<script type="text/javascript">
+    // Link tới mô hình của bạn (URL được export từ Teachable Machine)
+    const URL = "https://teachablemachine.withgoogle.com/models/ShU7mDWbU/";
+
+    let model, webcam, labelContainer, maxPredictions;
+
+    // Load mô hình và thiết lập webcam
+    async function init() {
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+
+        // Tải mô hình và metadata
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+
+        // Thiết lập webcam với kích thước mới: 400x300; flip hình nếu cần
+        const flip = true;
+        webcam = new tmImage.Webcam(400, 300, flip);
+        await webcam.setup(); // Yêu cầu truy cập camera
+        await webcam.play();
+        window.requestAnimationFrame(loop);
+
+        // Hiển thị canvas webcam vào container
+        const camContainer = document.getElementById("webcam-container");
+        camContainer.innerHTML = "";
+        camContainer.appendChild(webcam.canvas);
+
+        // Tạo các phần tử hiển thị dự đoán (một cho mỗi lớp)
+        labelContainer = document.getElementById("label-container");
+        labelContainer.innerHTML = "";
+        for (let i = 0; i < maxPredictions; i++) {
+            labelContainer.appendChild(document.createElement("div"));
+        }
+    }
+
+    async function loop() {
+        webcam.update(); // cập nhật frame của webcam
+        await predict();
+        window.requestAnimationFrame(loop);
+    }
+
+    async function predict() {
+        // Chạy dự đoán trên canvas của webcam
+        const prediction = await model.predict(webcam.canvas);
+        for (let i = 0; i < maxPredictions; i++) {
+            const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+            labelContainer.childNodes[i].innerHTML = classPrediction;
+        }
+    }
+</script>
+
+        <!-- Footer -->
+        <footer>
+            <p>&copy; 2025 My Cosmetics. All rights reserved.</p>
+        </footer>
+
+        <!-- JavaScript for Camera and Fake Evaluation -->
+        <script>
+            document.getElementById('startCamera').addEventListener('click', async function() {
+                const video = document.getElementById('cameraFeed');
+                const result = document.getElementById('evaluationResult');
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    video.style.display = 'block';
+                    video.srcObject = stream;
+                    result.innerText = "Đang đánh giá tình trạng da (nếu biết)...";
+                    setTimeout(() => {
+                        result.innerText = "Kết quả đánh giá: Da bạn có dấu hiệu khô và cần bổ sung ẩm độ.";
+                    }, 3000);
+                } catch (error) {
+                    result.innerText = "Không thể truy cập camera: " + error.message;
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>
